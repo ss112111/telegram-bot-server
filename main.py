@@ -10,7 +10,12 @@ CHAT_ID = "698603211"
 @app.route('/', methods=['POST'])
 def webhook():
     try:
-        data = json.loads(request.data.decode('utf-8'))
+        # Log the raw body
+        raw_body = request.data.decode('utf-8')
+        print(f"🔹 Raw webhook received: {raw_body}")
+
+        # Try parsing JSON
+        data = json.loads(raw_body)
 
         direction = data.get("direction", "").upper()
         target = data.get("target")
@@ -19,6 +24,7 @@ def webhook():
         t2 = data.get("t2")
         t3 = data.get("t3")
 
+        # Message format: full signal with 3 targets
         if direction in ["CALL", "PUT"] and t1 and t2 and t3:
             arrow = "📈" if direction == "CALL" else "📉"
             msg = f"""{arrow} {direction} Signal Fired!
@@ -26,20 +32,26 @@ def webhook():
 🎯 Target 2: ${t2}
 🎯 Target 3: ${t3}"""
 
+        # Message format: target reached
         elif direction in ["CALL", "PUT"] and target and price:
             arrow = "📈" if direction == "CALL" else "📉"
             msg = f"✅ {direction} Target {target} reached at ${price}"
 
+        # Fail message
         elif direction == "FAIL":
             msg = "❌ Trade failed to hit any target"
 
+        # Fallback for malformed structure
         else:
-            msg = f"📢 Trade update: {data}"
+            msg = f"⚠️ Unrecognized format:\n{data}"
 
+        # Send to Telegram
         url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
         requests.post(url, data={"chat_id": CHAT_ID, "text": msg})
+
         return "ok"
 
     except Exception as e:
-        return str(e), 400
+        print(f"❌ ERROR: {str(e)}")
+        return "Invalid JSON", 400
 
