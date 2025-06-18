@@ -25,7 +25,8 @@ def webhook():
         t3 = data.get("t3")
 
         # Message format: full signal with 3 targets
-        if direction in ["CALL", "PUT"] and t1 and t2 and t3:
+        if direction in ["CALL", "PUT"] and t1 is not None and t2 is not None and t3 is not None:
+
             arrow = "📈" if direction == "CALL" else "📉"
             msg = f"""{arrow} {direction} Signal Fired!
 🎯 Target 1: ${t1}
