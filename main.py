@@ -12,14 +12,27 @@ def webhook():
     try:
         data = json.loads(request.data.decode('utf-8'))
 
-        direction = data.get("direction", "").upper()  # CALL or PUT or FAIL
-        price = data.get("price")  # TradingView sends this as number or string
+        direction = data.get("direction", "").upper()
+        target = data.get("target")
+        price = data.get("price")
+        t1 = data.get("t1")
+        t2 = data.get("t2")
+        t3 = data.get("t3")
 
-        if direction in ["CALL", "PUT"] and price:
+        if direction in ["CALL", "PUT"] and t1 and t2 and t3:
             arrow = "📈" if direction == "CALL" else "📉"
-            msg = f"{arrow} {direction} Target → Predicted price: ${price}"
+            msg = f"""{arrow} {direction} Signal Fired!
+🎯 Target 1: ${t1}
+🎯 Target 2: ${t2}
+🎯 Target 3: ${t3}"""
+
+        elif direction in ["CALL", "PUT"] and target and price:
+            arrow = "📈" if direction == "CALL" else "📉"
+            msg = f"✅ {direction} Target {target} reached at ${price}"
+
         elif direction == "FAIL":
             msg = "❌ Trade failed to hit any target"
+
         else:
             msg = f"📢 Trade update: {data}"
 
@@ -29,3 +42,4 @@ def webhook():
 
     except Exception as e:
         return str(e), 400
+
