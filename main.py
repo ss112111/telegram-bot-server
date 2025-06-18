@@ -12,15 +12,16 @@ def webhook():
     try:
         data = json.loads(request.data.decode('utf-8'))
 
-        direction = data.get("direction", "").upper()  # CALL or PUT
-        level = data.get("target")  # 1, 2, or 3
+        direction = data.get("direction", "").upper()  # CALL or PUT or FAIL
+        price = data.get("price")  # predicted price level (optional)
 
-        if direction and level:
-            msg = f"{'📈' if direction == 'CALL' else '📉'} {direction} Target {level} hit!"
+        if direction in ["CALL", "PUT"] and price:
+            arrow = "📈" if direction == "CALL" else "📉"
+            msg = f"{arrow} {direction} Target → Predicted price: ${price}"
         elif direction == "FAIL":
             msg = "❌ Trade failed to hit any target"
         else:
-            msg = f"📢 New trade alert received: {data}"
+            msg = f"📢 Trade update: {data}"
 
         url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
         requests.post(url, data={"chat_id": CHAT_ID, "text": msg})
