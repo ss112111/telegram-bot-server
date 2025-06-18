@@ -13,7 +13,7 @@ def webhook():
         data = json.loads(request.data.decode('utf-8'))
 
         direction = data.get("direction", "").upper()  # CALL or PUT or FAIL
-        price = data.get("price")  # predicted price level (optional)
+        price = data.get("price")  # TradingView sends this as number or string
 
         if direction in ["CALL", "PUT"] and price:
             arrow = "📈" if direction == "CALL" else "📉"
