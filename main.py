@@ -6,6 +6,17 @@ app = Flask(__name__)
 
 TELEGRAM_TOKEN = "8117149892:AAGVS_me2cwH7qCmsYPBqWx-81MVZgUIXsY"
 CHAT_ID = "698603211"
+CHANNEL_ID = "-1002884178515"  # <-- your channel
+
+...
+
+# Send to personal
+url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+requests.post(url, data={"chat_id": CHAT_ID, "text": msg})
+
+# Send to channel
+requests.post(url, data={"chat_id": CHANNEL_ID, "text": msg})
+
 
 @app.route('/', methods=['POST'])
 def webhook():
