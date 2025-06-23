@@ -54,8 +54,8 @@ def webhook():
             msg = "❌ Trade failed to hit any target"
 
         # Fallback for malformed structure
-        else:
-            msg = f"⚠️ Unrecognized format:\n{data}"
+       else:
+    msg = f"⚠️ Unrecognized format:\n{json.dumps(data)}"
 
         # Send to Telegram
         url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
